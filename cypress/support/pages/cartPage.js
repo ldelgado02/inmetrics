@@ -14,6 +14,8 @@ class CartPage {
     firstRowPrice = () => this.cartRows().first().find('.cart_price p')
     cartTotalPrice = () => cy.get('.cart_total_price')
     deleteButton = () => this.cartRows().first().find('.cart_quantity_delete')
+    checkoutButton = () => cy.get('.cart_navigation').contains('Proceed To Checkout')
+    checkoutTable = () => cy.get('#cart_info_table')
 
     visit() {
         cy.visit('/view_cart')

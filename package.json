@@ -7,7 +7,16 @@
   "type": "commonjs",
   "main": "cypress.config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+
+    "cy:run:web": "cypress run --env tags=@web",
+    "cy:run:api": "cypress run --env tags=@api",
+
+    "cy:run:login": "cypress run --spec \"cypress/e2e/features/web/login.feature\"",
+    "cy:run:cart": "cypress run --spec \"cypress/e2e/features/web/cart.feature\"",
+    "cy:run:search": "cypress run --spec \"cypress/e2e/features/web/search.feature\"",
+    "cy:run:trello": "cypress run --spec \"cypress/e2e/features/api/trello.feature\""
   },
   "dependencies": {
     "acorn": "^7.4.1",

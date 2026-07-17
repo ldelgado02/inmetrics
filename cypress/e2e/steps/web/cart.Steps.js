@@ -28,6 +28,12 @@ Then('produto adicionado deve ser exibido', () => {
         .should('be.visible')
 })
 
+And('produto deve ser exibido na tela de pagamento', () => {
+    cartPage.checkoutTable()
+        .contains(produtoNome)
+        .should('be.visible')
+})
+
 
 Given('eu adiciono um produto no carrinho', () => {
     adicionarProdutoAoCarrinho()

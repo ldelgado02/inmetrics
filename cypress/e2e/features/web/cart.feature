@@ -11,6 +11,8 @@ Feature: Validar carrinho de compras
         When adiciono um produto no carrinho
         And clico no botão "View Cart"
         Then produto adicionado deve ser exibido
+        And clico no botão "Proceed To Checkout"
+        And produto deve ser exibido na tela de pagamento
 
     @web @cart
     Scenario: Atualizar quantidade e valor ao adicionar produto já existente no carrinho
