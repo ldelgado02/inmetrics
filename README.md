@@ -40,8 +40,19 @@ A abordagem do projeto seguiu a seguinte ordem:
 
 ## Instalação
 
-1. Clone o repositório
-2. Na raiz do projeto, instale as dependências:
+1. Clone o repositório:
+
+```bash
+git clone https://github.com/ldelgado02/inmetrics.git
+```
+
+2. Entre na pasta do projeto:
+
+```bash
+cd inmetrics
+```
+
+3. Instale as dependências:
 
 ```bash
 npm install
