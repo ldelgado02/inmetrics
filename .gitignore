@@ -4,3 +4,4 @@ cypress/screenshots/
 cypress/downloads/
 .env
 npm-debug.log*
+.vscode/
