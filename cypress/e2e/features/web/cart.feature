@@ -4,7 +4,7 @@ Feature: Validar carrinho de compras
     E validar carrinho de compras
 
     Background: Estar na página inicial do sistema Automation Exercise
-        Given que estou na página de login
+        Given que estou na página de produtos
 
     @web @cart
     Scenario: Adicionar produto no carrinho vazio e validar quantidade e valor
