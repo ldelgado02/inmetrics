@@ -9,6 +9,7 @@
   "scripts": {
     "cy:open": "cypress open",
     "cy:run": "cypress run",
+    "cy:run:headed": "cypress run --headed",
 
     "cy:run:web": "cypress run --env tags=@web",
     "cy:run:api": "cypress run --env tags=@api",
