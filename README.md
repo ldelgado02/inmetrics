@@ -78,13 +78,6 @@ npm run cy:run
 npm run cy:run:headed
 ```
 
-### Rodar por tipo de teste
-
-```bash
-npm run cy:run:web
-npm run cy:run:api
-```
-
 ### Rodar uma feature específica
 
 ```bash
