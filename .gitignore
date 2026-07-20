@@ -4,4 +4,6 @@ cypress/screenshots/
 cypress/downloads/
 .env
 npm-debug.log*
+allure-results/
+allure-report/
 .vscode/
