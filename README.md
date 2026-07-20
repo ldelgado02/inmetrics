@@ -7,6 +7,7 @@ Projeto de automação de testes desenvolvido para o processo seletivo, cobrindo
 - JavaScript
 - Cypress
 - Cucumber (cypress-cucumber-preprocessor)
+- Allure Report (relatório de execução dos testes)
 
 ## Estrutura do projeto
 
@@ -22,6 +23,9 @@ cypress/
 ├── support/
 │   └── pages/           -> Page Objects (POM)
 └── fixtures/
+
+allure-results/     -> gerado ao rodar os testes (ignorado no Git)
+allure-report/      -> gerado pelo allure:generate (ignorado no Git)
 ```
 
 ## Planejamento
@@ -37,6 +41,7 @@ A abordagem do projeto seguiu a seguinte ordem:
 
 - Node.js instalado
 - npm instalado
+- Java instalado (necessário para o Allure Report gerar e abrir o relatório)
 
 ## Instalação
 
@@ -85,6 +90,28 @@ npm run cy:run:login
 npm run cy:run:cart
 npm run cy:run:search
 npm run cy:run:trello
+```
+
+## Relatório de testes (Allure)
+
+O projeto gera relatórios de execução utilizando o Allure Reports.
+
+1. Rode os testes normalmente (isso gera os resultados na pasta `allure-results`):
+
+```bash
+npm run cy:run
+```
+
+2. Gere o relatório HTML a partir dos resultados:
+
+```bash
+npm run allure:generate
+```
+
+3. Abra o relatório no navegador:
+
+```bash
+npm run allure:open
 ```
 
 ## Cenários cobertos
