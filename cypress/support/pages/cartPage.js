@@ -3,7 +3,7 @@
 class CartPage {
     firstProduct = () => cy.get('.features_items .product-image-wrapper').first()
     productName = () => this.firstProduct().find('.productinfo p')
-    addToCartButton = () => this.firstProduct().find('.product-overlay .add-to-cart')
+    addToCartButton = () => this.firstProduct().find('.productinfo .add-to-cart')
 
     viewCartButton = () => cy.get('.modal-content').contains('View Cart')
     continueShoppingButton = () => cy.get('.modal-content .btn-success')
@@ -22,7 +22,7 @@ class CartPage {
     }
 
     addProductToCart() {
-        this.addToCartButton().click({ force: true })
+        this.addToCartButton().should('be.visible').click()
     }
 
     clickButton(nomeBotao) {

@@ -3,10 +3,10 @@ import { When, Then, And } from "cypress-cucumber-preprocessor/steps";
 
 let resposta
 
-When('eu envio uma requisição GET para a action {string} do Trello', (actionId) =>{
+When('eu envio uma requisição GET para a action do Trello', () =>{
     cy.request({
       method: 'GET',
-      url: `https://api.trello.com/1/actions/${actionId}`
+      url: `https://api.trello.com/1/actions/${Cypress.env('trelloActionId')}`
     }).then((response) =>{
         resposta = response
     })

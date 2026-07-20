@@ -7,9 +7,14 @@ Given('que estou na página de login', () => {
     loginPage.visit()
 })
 
-When('eu preecho o email {string} e a senha {string}', (email, senha) => {
-    loginPage.fillEmail(email)
-    loginPage.fillPassword(senha)
+When('eu informo minhas credenciais válidas', () => {
+    loginPage.fillEmail(Cypress.env('loginEmail'))
+    loginPage.fillPassword(Cypress.env('loginPassword'))
+})
+
+When('eu informo um email válido e senha inválida {string}', (senhaInvalida) => {
+    loginPage.fillEmail(Cypress.env('loginEmail'))
+    loginPage.fillPassword(senhaInvalida)
 })
 
 And('clico no botão de login', () => {

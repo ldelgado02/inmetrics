@@ -7,12 +7,12 @@ Feature: Login válido e inválido
 
     @web @login
     Scenario: Login com credenciais válidas
-        When eu preecho o email "teste2021@teste.com.br" e a senha "teste"
+        When eu informo minhas credenciais válidas
         And clico no botão de login
         Then devo logar no sistema corretamente
 
     @web @login
     Scenario: Login com credenciais inválidas
-        When eu preecho o email "teste2021@teste.com.br" e a senha "testeinvalido"
+        When eu informo um email válido e senha inválida "testeinvalido"
         And clico no botão de login
         Then mensagem de credenciaL inválida deve ser exibida
