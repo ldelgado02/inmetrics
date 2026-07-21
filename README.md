@@ -149,6 +149,21 @@ npm run allure:generate
 npm run allure:open
 ```
 
+### Atenção ao rodar features específicas
+
+A pasta `allure-results` **acumula** os resultados de cada execução, sem sobrescrever os anteriores. Isso significa que, se você rodar `npm run cy:run:trello` (ou qualquer outra feature específica) depois de já ter rodado `cy:run` ou `cy:run:allure`, o relatório gerado vai **misturar** os resultados da execução antiga com os novos, mostrando testes que não rodaram naquela vez.
+
+Para evitar isso, limpe os resultados antes de rodar uma feature específica e gerar o relatório:
+
+```bash
+npm run allure:clean
+npm run cy:run:trello
+npm run allure:generate
+npm run allure:open
+```
+
+O `npm run cy:run:allure` já faz essa limpeza automaticamente antes de rodar, então esse cuidado é necessário apenas quando os comandos são executados separadamente.
+
 ## Cenários cobertos
 
 ### Web (site: Automation Exercise - automationexercise.com)
