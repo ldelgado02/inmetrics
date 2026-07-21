@@ -93,7 +93,7 @@ cp .env.example .env
 
 Os testes web utilizam o site [Automation Exercise](https://www.automationexercise.com/), uma alternativa compatível com o desafio proposto.
 
-### Cenários web
+### Login
 
 - Login com credenciais válidas.
 - Login com senha inválida.
