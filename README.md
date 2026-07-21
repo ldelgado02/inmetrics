@@ -8,6 +8,7 @@ Projeto de automação de testes desenvolvido para o processo seletivo, cobrindo
 - Cypress
 - Cucumber (cypress-cucumber-preprocessor)
 - Page Object Model (POM)
+- Service Object (organização das chamadas de API)
 - dotenv (gerenciamento de variáveis de ambiente)
 - Allure Report (relatório de execução dos testes)
 
@@ -23,7 +24,8 @@ cypress/
 │       ├── web/
 │       └── api/
 ├── support/
-│   └── pages/           -> Page Objects (POM)
+│   ├── pages/           -> Page Objects (POM)
+│   └── services/        -> Service Objects (chamadas de API)
 └── fixtures/
 
 allure-results/     -> gerado ao rodar os testes (ignorado no Git)
@@ -39,7 +41,8 @@ A abordagem do projeto seguiu a seguinte ordem:
 3. **Criação dos steps**: em seguida, foram implementados os step definitions correspondentes a cada linha das features.
 4. **Aplicação do POM (Page Object Model)**: o projeto foi reorganizado utilizando POM, separando os seletores e ações de cada página em classes próprias (`cypress/support/pages`), deixando os steps mais limpos e a manutenção mais simples.
 5. **Configuração de variáveis de ambiente**: os dados sensíveis/configuráveis do projeto (credenciais de login e ID da action do Trello) foram movidos para um arquivo `.env`, evitando que fiquem expostos diretamente nas features e nos steps.
-6. **Implementação de relatório com Allure**: por fim, foi adicionado o Allure Report para gerar relatórios de execução dos testes, facilitando a visualização dos resultados.
+6. **Implementação de relatório com Allure**: foi adicionado o Allure Report para gerar relatórios de execução dos testes, facilitando a visualização dos resultados.
+7. **Aplicação do Service Object na API**: por fim, a chamada de API do Trello foi movida para um Service Object (`cypress/support/services`), seguindo a mesma lógica de organização do POM, deixando o step de API mais limpo e a manutenção mais simples.
 
 ## Pré-requisitos
 
