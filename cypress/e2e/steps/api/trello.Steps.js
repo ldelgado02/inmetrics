@@ -61,3 +61,22 @@ And('a data da resposta deve estar no formato ISO', () => {
     expect(resposta.body.date).to.match(formatoISO)
     expect(resposta.body.data.card.due).to.match(formatoISO)
 })
+
+When('eu envio uma requisição GET para uma action inexistente do Trello', () => {
+    trelloService.getAction('000000000000000000000000', { failOnStatusCode: false }).then((response) => {
+        resposta = response
+    })
+})
+
+When('eu envio uma requisição POST para a action do Trello', () => {
+    trelloService.getAction(Cypress.env('trelloActionId'), {
+        method: 'POST',
+        failOnStatusCode: false
+    }).then((response) => {
+        resposta = response
+    })
+})
+
+Then('o Content-Type deve ser {string}', (contentTypeEsperado) => {
+    expect(resposta.headers['content-type']).to.include(contentTypeEsperado)
+})
