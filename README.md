@@ -22,11 +22,10 @@ cypress/
 │   │   └── api/
 │   └── steps/           -> step definitions
 │       ├── web/
-│       └── api/
-├── support/
-│   ├── pages/           -> Page Objects (POM)
-│   └── services/        -> Service Objects (chamadas de API)
-└── fixtures/
+│       └── api/      
+└── support/
+    ├── pages/          -> Page Objects (POM)
+    └── services/       -> Service Objects (chamadas de API)
 
 allure-results/     -> gerado ao rodar os testes (ignorado no Git)
 allure-report/      -> gerado pelo allure:generate (ignorado no Git)
@@ -88,6 +87,64 @@ copy .env.example .env
 cp .env.example .env
 ```
 
+## Cenários cobertos
+
+## Cenários web
+
+Os testes web utilizam o site [Automation Exercise](https://www.automationexercise.com/), uma alternativa compatível com o desafio proposto.
+
+### Login
+
+- Login com credenciais válidas.
+- Login com senha inválida.
+- Validação de mensagem de credencial inválida.
+
+### Busca de produtos
+
+- Busca de produto existente.
+- Busca de produto inexistente.
+- Validação da exibição dos resultados da busca.
+
+### Carrinho e checkout
+
+- Inclusão de produto no carrinho.
+- Validação do produto incluído no carrinho.
+- Validação do produto na tela de checkout.
+- Inclusão repetida do mesmo produto, com validação de quantidade e valor total.
+- Remoção de produto do carrinho.
+
+## Cenários de API
+
+Os testes de API utilizam o endpoint público do Trello:
+
+```text
+GET https://api.trello.com/1/actions/{actionId}
+```
+
+A chamada está centralizada no Service Object:
+
+```text
+cypress/support/services/TrelloService.js
+```
+
+### Cenários positivos
+
+- Validação do status code `200`.
+- Exibição e validação do campo `data.list.name`.
+- Validação do tempo de resposta.
+- Validação de que o ID retornado é igual ao ID consultado.
+- Validação da estrutura principal do JSON.
+- Validação de campos obrigatórios.
+- Validação dos tipos dos campos.
+- Validação de datas no formato ISO 8601.
+- Validação do header `Content-Type` como `application/json`.
+
+### Cenários negativos
+
+- Consulta de uma action inexistente, com validação do status `404`.
+- Envio de requisição `POST` para a action, com validação do status `404`.
+
+
 ## Como executar os testes
 
 ### Modo interativo (Test Runner)
@@ -108,13 +165,33 @@ npm run cy:run
 npm run cy:run:headed
 ```
 
-### Rodar uma feature específica
+### Executar testes Web
+
+Executar todos os cenários Web:
+
+```bash
+npm run cy:run:web
+```
+Executar uma feature web específica:
 
 ```bash
 npm run cy:run:login
-npm run cy:run:cart
 npm run cy:run:search
+npm run cy:run:cart
+```
+### Executar testes de API
+
+Executar todos os cenários de API:
+
+```bash
 npm run cy:run:trello
+```
+
+Executar uma feature de API específica:
+
+```bash
+npm run cy:run:trello:positive
+npm run cy:run:trello:negative
 ```
 
 ## Relatório de testes (Allure)
@@ -127,7 +204,7 @@ O projeto gera relatórios de execução utilizando o Allure Reports.
 npm run cy:run:allure
 ```
 
-Esse comando roda os testes, gera o relatório e já abre no navegador.
+Esse comando roda todos os testes, gera o relatório e já abre no navegador.
 
 ### Opção passo a passo
 
@@ -164,20 +241,18 @@ npm run allure:open
 
 O `npm run cy:run:allure` já faz essa limpeza automaticamente antes de rodar, então esse cuidado é necessário apenas quando os comandos são executados separadamente.
 
-## Cenários cobertos
+## Boas práticas aplicadas
 
-### Web (site: Automation Exercise - automationexercise.com)
-
-- **Login**: login com credenciais válidas e inválidas
-- **Busca**: busca de produto existente e inexistente
-- **Carrinho**: adicionar produto, atualizar quantidade/valor ao adicionar produto repetido, remover produto, e validar produto na tela de pagamento (checkout)
-
-### API
-
-- GET na action do Trello, validando o status code da resposta e exibindo o campo `name` da estrutura `list`
+- Cenários descritos em Gherkin com Cucumber.
+- Separação entre features e step definitions.
+- Page Objects para ações e seletores da interface web.
+- Service Object para centralizar chamadas da API.
+- Dados configuráveis carregados pelo `.env`.
+- Separação dos cenários positivos e negativos de API.
+- Execução seletiva por scripts npm.
+- Relatórios de execução com Allure.
 
 ## Observações
 
 - Os testes de login utilizam um usuário de teste próprio, criado no site Automation Exercise.
 - O teste de API consome um endpoint público do Trello, sem necessidade de autenticação.
-- As dependências do projeto foram revisadas com o `depcheck` para conter apenas o que é efetivamente utilizado.
