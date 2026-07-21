@@ -1,4 +1,4 @@
-Feature: API Trello
+Feature: API Trello - Cenários Positivos
 
     Background: Consultar a action do Trello
         When eu envio uma requisição GET para a action do Trello

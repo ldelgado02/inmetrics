@@ -1,4 +1,4 @@
-Feature: Cenários Negativos - API Trello
+Feature: API Trello - Cenários Negativos
 
 @api
 Scenario: Consultar action inexistente
