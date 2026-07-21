@@ -1,16 +1,13 @@
 /// <reference types="cypress" />
 import { When, Then, And } from "cypress-cucumber-preprocessor/steps";
+import trelloService from "../../../support/services/TrelloService";
 
 let resposta
 
 When('eu envio uma requisição GET para a action do Trello', () =>{
-    cy.request({
-      method: 'GET',
-      url: `https://api.trello.com/1/actions/${Cypress.env('trelloActionId')}`
-    }).then((response) =>{
+    trelloService.getAction(Cypress.env('trelloActionId')).then((response) =>{
         resposta = response
     })
-    
 })
 
 Then('então status code deve ser {int}', (statusEsperado) => {
