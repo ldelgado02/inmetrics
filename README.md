@@ -162,3 +162,4 @@ npm run allure:open
 
 - Os testes de login utilizam um usuário de teste próprio, criado no site Automation Exercise.
 - O teste de API consome um endpoint público do Trello, sem necessidade de autenticação.
+- As dependências do projeto foram revisadas com o `depcheck` para conter apenas o que é efetivamente utilizado.
