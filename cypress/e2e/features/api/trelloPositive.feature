@@ -8,7 +8,7 @@ Feature: API Trello
     Scenario: Consultar API e validar nome na lista
         And o campo "name" da estrutura list deve estar preenchido
 
-    @api
+    @api @performance
     Scenario: Validar tempo de resposta da API
         And o tempo de resposta deve ser menor que 2000 ms
 
@@ -35,3 +35,12 @@ Feature: API Trello
     @api
     Scenario: Validar Content-Type
     Then o Content-Type deve ser "application/json"
+
+    @api @performance
+    Scenario: Validar média do tempo de resposta
+        When realizo 5 consultas da action do Trello
+        Then a média do tempo de resposta deve ser menor que 2000 ms
+    
+    @api @performance
+    Scenario: Validar tamanho máximo da resposta
+        And o tamanho da resposta deve ser menor que 50 KB

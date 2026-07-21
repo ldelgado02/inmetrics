@@ -3,6 +3,7 @@ import { When, Then, And } from "cypress-cucumber-preprocessor/steps";
 import trelloService from "../../../support/services/TrelloService";
 
 let resposta
+let duracoes = []
 
 When('eu envio uma requisição GET para a action do Trello', () =>{
     trelloService.getAction(Cypress.env('trelloActionId')).then((response) =>{
@@ -79,4 +80,31 @@ When('eu envio uma requisição POST para a action do Trello', () => {
 
 Then('o Content-Type deve ser {string}', (contentTypeEsperado) => {
     expect(resposta.headers['content-type']).to.include(contentTypeEsperado)
+})
+
+When('realizo {int} consultas da action do Trello', (quantidade) => {
+    duracoes = []
+
+    Cypress._.times(quantidade, () => {
+        trelloService.getAction(Cypress.env('trelloActionId')).then((response) => {
+            duracoes.push(response.duration)
+        })
+    })
+})
+
+Then('a média do tempo de resposta deve ser menor que {int} ms', (tempoMaximo) => {
+    cy.then(() => {
+        const media = duracoes.reduce((total, duracao) => total + duracao, 0) / duracoes.length
+
+        cy.log(`Média de resposta: ${media.toFixed(2)} ms`)
+        expect(media).to.be.lessThan(tempoMaximo)
+    })
+})
+
+And('o tamanho da resposta deve ser menor que {int} KB', (limiteKB) => {
+    const tamanhoEmBytes = new Blob([JSON.stringify(resposta.body)]).size
+    const limiteEmBytes = limiteKB * 1024
+
+    cy.log(`Tamanho da resposta: ${tamanhoEmBytes} bytes`)
+    expect(tamanhoEmBytes).to.be.lessThan(limiteEmBytes)
 })
