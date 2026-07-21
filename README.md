@@ -45,9 +45,9 @@ A abordagem do projeto seguiu a seguinte ordem:
 
 ## Pré-requisitos
 
-- Node.js instalado
-- npm instalado
-- Java instalado (necessário para o Allure Report gerar e abrir o relatório)
+- Node.js 18 ou superior
+- npm 9 ou superior
+- Java 8 ou superior (necessário para o Allure Report gerar e abrir o relatório)
 
 ## Instalação
 
@@ -89,23 +89,23 @@ cp .env.example .env
 
 ## Cenários cobertos
 
-## Cenários web
+### Cenários web
 
 Os testes web utilizam o site [Automation Exercise](https://www.automationexercise.com/), uma alternativa compatível com o desafio proposto.
 
-### Login
+### Cenários web
 
 - Login com credenciais válidas.
 - Login com senha inválida.
 - Validação de mensagem de credencial inválida.
 
-### Busca de produtos
+#### Busca de produtos
 
 - Busca de produto existente.
 - Busca de produto inexistente.
 - Validação da exibição dos resultados da busca.
 
-### Carrinho e checkout
+#### Carrinho e checkout
 
 - Inclusão de produto no carrinho.
 - Validação do produto incluído no carrinho.
@@ -113,7 +113,7 @@ Os testes web utilizam o site [Automation Exercise](https://www.automationexerci
 - Inclusão repetida do mesmo produto, com validação de quantidade e valor total.
 - Remoção de produto do carrinho.
 
-## Cenários de API
+### Cenários de API
 
 Os testes de API utilizam o endpoint público do Trello:
 
@@ -127,7 +127,7 @@ A chamada está centralizada no Service Object:
 cypress/support/services/TrelloService.js
 ```
 
-### Cenários positivos
+#### Cenários positivos
 
 - Validação do status code `200`.
 - Exibição e validação do campo `data.list.name`.
@@ -139,7 +139,7 @@ cypress/support/services/TrelloService.js
 - Validação de datas no formato ISO 8601.
 - Validação do header `Content-Type` como `application/json`.
 
-### Cenários negativos
+#### Cenários negativos
 
 - Consulta de uma action inexistente, com validação do status `404`.
 - Envio de requisição `POST` para a action, com validação do status `404`.
