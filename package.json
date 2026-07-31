@@ -31,6 +31,6 @@
     "dotenv": "^17.4.2"
   },
   "cypress-cucumber-preprocessor": {
-    "step_definitions": "cypress/e2e/steps"
+    "step_definitions": "cypress/e2e/steps/**/*.js"
   }
 }
