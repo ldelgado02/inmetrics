@@ -3,6 +3,7 @@ import { Given, When, Then, And } from "cypress-cucumber-preprocessor/steps";
 import cartPage from "../../../support/pages/CartPage";
 
 let produtoNome = "";
+let produtoNome2 = "";
 
 function adicionarProdutoAoCarrinho() {
     cartPage.productName()
@@ -12,6 +13,16 @@ function adicionarProdutoAoCarrinho() {
         })
 
     cartPage.addProductToCart()
+}
+
+function adicionarSegundoProdutoAoCarrinho() {
+    cartPage.secondProductName()
+        .invoke('text')
+        .then((texto) => {
+            produtoNome2 = texto.trim()
+        })
+
+    cartPage.addSecondProductToCart()
 }
 
 When('adiciono um produto no carrinho', () => {
@@ -32,6 +43,15 @@ And('produto deve ser exibido na tela de pagamento', () => {
     cartPage.checkoutTable()
         .contains(produtoNome)
         .should('be.visible')
+})
+
+And('adiciono um segundo produto diferente no carrinho', () => {
+    adicionarSegundoProdutoAoCarrinho()
+})
+
+Then('os dois produtos devem ser exibidos no carrinho', () => {
+    cartPage.cartTable().contains(produtoNome).should('be.visible')
+    cartPage.cartTable().contains(produtoNome2).should('be.visible')
 })
 
 

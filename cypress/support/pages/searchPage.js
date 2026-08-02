@@ -13,7 +13,9 @@ class SearchPage {
     }
 
     search(termo) {
-        this.searchInput().type(termo)
+        if (termo) {
+            this.searchInput().type(termo)
+        }
         this.searchButton().click()
     }
 }

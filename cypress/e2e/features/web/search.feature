@@ -16,3 +16,14 @@ Feature: Pesquisa de produtos existentes e inexistente
         When busco o termo "XYZ"
         Then a lista de produtos deve ser atualizada
         And nenhum produto deve ser exibido
+
+    @web @search
+    Scenario: Busca com termo vazio
+        When busco o termo ""
+        Then a lista de produtos deve ser atualizada
+
+    @web @search
+    Scenario: Busca é case-insensitive
+        When busco o termo "FROZEN"
+        Then a lista deve exibir produtos que tenham o termo "frozen"
+        And o resultado deve ser exibido

@@ -30,3 +30,11 @@ Feature: Validar carrinho de compras
         When clico no botão de excluir produto
         Then o produto deve ser removido do carrinho
         And mensagem de "carrinho vazio" deve ser exibida
+
+    @web @cart
+    Scenario: Adicionar dois produtos diferentes no carrinho
+        When adiciono um produto no carrinho
+        And clico no botão "Continue Shopping"
+        And adiciono um segundo produto diferente no carrinho
+        And clico no botão "View Cart"
+        Then os dois produtos devem ser exibidos no carrinho

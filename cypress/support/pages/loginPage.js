@@ -6,6 +6,7 @@ class LoginPage {
     loginButton = () => cy.get('[data-qa="login-button"]')
     loggedInMenu = () => cy.get('.shop-menu > .nav > :nth-child(4) > a')
     errorMessage = () => cy.get('.login-form > form > p')
+    logoutLink = () => cy.get('a[href="/logout"]')
 
     visit() {
         cy.visit('https://www.automationexercise.com/login')
@@ -29,6 +30,14 @@ class LoginPage {
 
     validateInvalidCredentials() {
         this.errorMessage().should('contain', 'incorrect')
+    }
+
+    clickLogout() {
+        this.logoutLink().click()
+    }
+
+    validateLoggedOut() {
+        this.loginButton().should('be.visible')
     }
 }
 

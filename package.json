@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@cypress/browserify-preprocessor": "^3.0.2",
+    "@faker-js/faker": "^10.5.0",
     "allure-commandline": "^2.43.0",
     "allure-cypress": "^3.10.2",
     "cypress": "^15.18.1",
@@ -31,6 +32,6 @@
     "dotenv": "^17.4.2"
   },
   "cypress-cucumber-preprocessor": {
-    "step_definitions": "cypress/e2e/steps/**/*.js"
+    "step_definitions": "cypress/e2e/steps"
   }
 }
