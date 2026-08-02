@@ -25,7 +25,14 @@ cypress/
 │       └── api/      
 └── support/
     ├── pages/          -> Page Objects (POM)
-    └── services/       -> Service Objects (chamadas de API)
+    ├── services/       -> Service Objects (chamadas de API)
+    │   ├── TrelloService.js
+    │   ├── LoginService.js
+    │   └── AccountService.js
+    └── data/           -> Geração, consumo e limpeza de massa de dados
+        ├── DataFactory.js
+        ├── DataProvider.js
+        └── DataCleaner.js
 
 allure-results/     -> gerado ao rodar os testes (ignorado no Git)
 allure-report/      -> gerado pelo allure:generate (ignorado no Git)
@@ -97,12 +104,17 @@ Os testes web utilizam o site [Automation Exercise](https://www.automationexerci
 
 - Login com credenciais válidas.
 - Login com senha inválida.
+- Login com e-mail não cadastrado.
+- Logout após login válido.
+- Cadastro de novo usuário com dados únicos (gerados dinamicamente via `DataFactory`/`DataProvider`), incluindo a exclusão da conta ao final do cenário.
 - Validação de mensagem de credencial inválida.
 
 #### Busca de produtos
 
 - Busca de produto existente.
 - Busca de produto inexistente.
+- Busca com termo vazio.
+- Busca case-insensitive (termo em maiúsculas retornando os mesmos resultados que em minúsculas).
 - Validação da exibição dos resultados da busca.
 
 #### Carrinho e checkout
@@ -111,9 +123,10 @@ Os testes web utilizam o site [Automation Exercise](https://www.automationexerci
 - Validação do produto incluído no carrinho.
 - Validação do produto na tela de checkout.
 - Inclusão repetida do mesmo produto, com validação de quantidade e valor total.
+- Inclusão de dois produtos diferentes no carrinho.
 - Remoção de produto do carrinho.
 
-### Cenários de API
+### Cenários da API de Produtos
 
 Os testes de API utilizam o endpoint público do Trello:
 
@@ -143,6 +156,42 @@ cypress/support/services/TrelloService.js
 
 - Consulta de uma action inexistente, com validação do status `404`.
 - Envio de requisição `POST` para a action, com validação do status `404`.
+
+### API de verificação de login
+
+Além do Trello, o projeto também cobre a API pública de prática do próprio Automation Exercise:
+
+```text
+POST https://automationexercise.com/api/verifyLogin
+```
+
+A chamada está centralizada no Service Object:
+
+```text
+cypress/support/services/LoginService.js
+```
+
+**Particularidade importante desta API:** ela sempre retorna HTTP `200` de verdade, independente do resultado. O "response code" documentado pela API (200, 400, 404) vem **dentro do corpo JSON**, no campo `responseCode` — não no status HTTP real. Os steps (`cypress/e2e/steps/api/loginApi.Steps.js`) validam esse campo, em vez do status HTTP.
+
+- Login com credenciais válidas → `responseCode 200`, mensagem "User exists!".
+- Login sem o parâmetro `email` → `responseCode 400`, mensagem de parâmetro faltando.
+- Login com credenciais inválidas → `responseCode 404`, mensagem "User not found!".
+
+### API de criação de conta
+
+```text
+POST https://automationexercise.com/api/createAccount
+DELETE https://automationexercise.com/api/deleteAccount
+```
+
+A chamada está centralizada no Service Object:
+
+```text
+cypress/support/services/AccountService.js
+```
+
+- Criação de conta com dados únicos gerados pelo `DataFactory`/`DataProvider` → `responseCode 201`, mensagem "User created!".
+- A conta criada é registrada no `DataCleaner` e excluída automaticamente via API ao final do cenário (ver seção "Massa de dados" abaixo).
 
 
 ## Como executar os testes
@@ -192,6 +241,8 @@ Executar uma feature de API específica:
 ```bash
 npm run cy:run:trello:positive
 npm run cy:run:trello:negative
+npm run cy:run:loginApi
+npm run cy:run:accountApi
 ```
 
 ## Relatório de testes (Allure)
@@ -241,6 +292,39 @@ npm run allure:open
 
 O `npm run cy:run:allure` já faz essa limpeza automaticamente antes de rodar, então esse cuidado é necessário apenas quando os comandos são executados separadamente.
 
+## Massa de dados: geração, consumo e limpeza
+
+Alguns cenários precisam de dados únicos a cada execução (ex.: cadastro de usuário, que falha se o e-mail já existir). Para isso, o projeto tem uma camada dedicada em `cypress/support/data/`, com três classes de responsabilidade única:
+
+### `DataFactory.js` — geração
+
+É a única classe que gera dado novo, usando a biblioteca [`@faker-js/faker`](https://fakerjs.dev/). Não sabe de onde o dado é consumido nem quem faz a limpeza depois — só gera.
+
+- `buildUser()`: nome, e-mail, senha, telefone, endereço, data de nascimento e um país sorteado **apenas entre os países aceitos pelo `<select>` de cadastro do site** (a lista completa de países do mundo real não serviria, pois o site só aceita um conjunto fixo de opções).
+- `buildSearchTerm()`: sorteia um termo de busca plausível para o catálogo do site.
+- `buildCartItem()` / `buildBatch()`: geram dado de produto/quantidade e lotes de dados. Ficam disponíveis para cenários futuros que precisem de carrinho com dado fake, mas **não são usados pelos cenários atuais** (o carrinho hoje usa produtos reais da listagem do site, não dado gerado).
+
+### `DataProvider.js` — consumo
+
+É a porta de entrada usada pelos Steps. Decide entre duas fontes, dependendo do que o cenário precisa:
+
+- **Dado fixo e sensível** (`getUser({ fromFixture: true })`): lê a credencial real de login diretamente do `.env` via `Cypress.env()`. Usado no cenário de login válido, porque precisa ser uma conta que **realmente existe** no site — não pode ser gerada.
+- **Dado novo e descartável** (`getUser()`, padrão): delega para o `DataFactory`. Usado no cenário de cadastro (precisa de e-mail único a cada execução) e no cenário de login com e-mail não cadastrado (precisa de um e-mail garantidamente inexistente).
+
+### `DataCleaner.js` — limpeza
+
+Funciona como um registro (ledger): um Step que cria algo via API chama `dataCleaner.register(tipo, payload)`, e o hook `afterEach` global (em `cypress/support/e2e.js`) chama `cleanupAll()` ao final de cada cenário, removendo tudo que foi registrado — mesmo que o teste falhe no meio.
+
+**Uso real hoje:** o cenário de API `accountApi.feature` (`createAccount`) registra a conta criada com `dataCleaner.register('apiAccount', { email, password })`, e a limpeza (`deleteAccount` via API, usando o `AccountService`) acontece automaticamente no `afterEach`, sem nenhum passo explícito na feature.
+
+**Por que o cenário de cadastro via UI (`login.feature`) não usa o `DataCleaner`:** excluir a conta criada pela UI exige estar logado naquela sessão específica e navegar até o link "Delete Account" (`SignupPage.deleteAccount()`) — uma operação de UI, não de API. O `DataCleaner` foi desenhado para limpezas via `cy.request()`, dissociadas de sessão de navegador; misturar UI ali quebraria essa responsabilidade única. Por isso, nesse cenário específico, a exclusão continua sendo um passo explícito na própria feature (`E excluo a conta criada`), deixando o ciclo de vida do teste visível para quem lê o `.feature`. Já na API, como a exclusão também é via `cy.request()`, o `DataCleaner` é a ferramenta certa — e é o que usamos.
+
+## Tratamento de anúncios de terceiros no site sob teste
+
+O `automationexercise.com` carrega anúncios de terceiros em iframes cross-origin, que ocasionalmente causavam dois problemas distintos durante a execução dos testes: um `SecurityError` interno do Cypress ao inspecionar a página, e um erro de serialização no `allure-cypress` ao tentar registrar o passo do teste. Nenhum dos dois tem relação com a aplicação sob teste.
+
+A solução aplicada, em `cypress/support/e2e.js`, foi bloquear a rede de anúncios antes que ela carregue, via `cy.intercept()` em um `beforeEach` global, cobrindo os provedores mais comuns (Google Ads/DoubleClick, Amazon Ads, Taboola, Outbrain). Essa abordagem foi escolhida no lugar de desabilitar `chromeWebSecurity` (alternativa mais simples, porém mais abrangente) porque bloquear a origem do problema evita desligar uma proteção de segurança do navegador inteira, mantendo o teste útil para detectar eventuais problemas reais de CORS na aplicação.
+
 ## Boas práticas aplicadas
 
 - Cenários descritos em Gherkin com Cucumber.
@@ -248,6 +332,9 @@ O `npm run cy:run:allure` já faz essa limpeza automaticamente antes de rodar, e
 - Page Objects para ações e seletores da interface web.
 - Service Object para centralizar chamadas da API.
 - Dados configuráveis carregados pelo `.env`.
+- Geração dinâmica de massa de dados com Faker, evitando colisão entre execuções (`DataFactory`/`DataProvider`).
+- Camada de limpeza de dados via `DataCleaner`, usada de fato no cenário de criação de conta via API (registro + limpeza automática no `afterEach`).
+- Bloqueio de domínios de terceiros para estabilidade dos testes, sem desabilitar proteções de segurança do navegador.
 - Separação dos cenários positivos e negativos de API.
 - Execução seletiva por scripts npm.
 - Relatórios de execução com Allure.

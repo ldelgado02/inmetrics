@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import accountService from '../services/AccountService'
 
 /**
  * DataCleaner
@@ -35,6 +36,14 @@ class DataCleaner {
                         url: `https://api.trello.com/1/cards/${payload.id}`,
                         failOnStatusCode: false,
                     })
+                    break
+
+                case 'apiAccount':
+                    // Conta criada via API (createAccount) durante o cenário.
+                    // A exclusão também é via API (deleteAccount), sem depender
+                    // de sessão de navegador — por isso se encaixa aqui, diferente
+                    // da conta criada via UI no cenário de cadastro web.
+                    accountService.deleteAccount(payload.email, payload.password)
                     break
 
                 case 'localState':
