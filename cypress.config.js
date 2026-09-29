@@ -7,7 +7,10 @@ require("dotenv").config();
 
 const options = browserify.defaultOptions;
 options.browserifyOptions.transform[1][1].global = true;
-options.browserifyOptions.transform[1][1].ignore = [/node_modules\/(?!allure-cypress)/];
+// Não transpila node_modules, exceto pacotes que chegam ao browser com sintaxe
+// que o browserify não entende (o @faker-js/faker v10 é ESM puro).
+// [\\/] cobre separadores de caminho do Windows e do Linux (CI).
+options.browserifyOptions.transform[1][1].ignore = [/node_modules[\\/](?!(allure-cypress|@faker-js)[\\/])/];
 
 const isCI = !!process.env.CI;
 
