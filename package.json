@@ -6,6 +6,9 @@
   "author": "Luis Delgado",
   "type": "commonjs",
   "main": "cypress.config.js",
+  "engines": {
+    "node": ">=20.1.0"
+  },
   "scripts": {
     "cy:open": "cypress open",
     "cy:run": "cypress run",
@@ -20,6 +23,8 @@
     "cy:run:trello:negative": "cypress run --spec \"cypress/e2e/features/api/trelloNegative.feature\"",
     "cy:run:loginApi": "cypress run --spec \"cypress/e2e/features/api/loginApi.feature\"",
     "cy:run:accountApi": "cypress run --spec \"cypress/e2e/features/api/accountApi.feature\"",
+    "cy:run:ci": "cypress run --browser chrome",
+    "allure:executor": "node scripts/allure-executor.js",
     "allure:generate": "allure generate allure-results --clean -o allure-report",
     "allure:open": "allure open allure-report",
     "allure:clean": "node -e \"require('fs').rmSync('allure-results',{recursive:true,force:true})\""

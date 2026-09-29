@@ -3,7 +3,11 @@ cypress/videos/
 cypress/screenshots/
 cypress/downloads/
 .env
+.env.*
+!.env.example
+cypress.env.json
 npm-debug.log*
 allure-results/
 allure-report/
+gh-pages/
 .vscode/

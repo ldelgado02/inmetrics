@@ -1,0 +1,138 @@
+name: Cypress + Allure
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# contents: write é necessário para publicar o relatório na branch gh-pages
+permissions:
+  contents: write
+
+# Evita duas execuções simultâneas na mesma branch disputando o gh-pages
+# (e a mesma conta de login do automationexercise.com).
+concurrency:
+  group: cypress-allure-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Testes Cypress (API + Web)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Publica no GitHub Pages só a partir da main (push ou disparo manual);
+    # PRs geram o relatório apenas como artifact, sem afetar o histórico.
+    env:
+      PUBLISH_REPORT: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      # Instala dependências (npm ci) com cache do npm e do binário do Cypress.
+      # continue-on-error mantém o pipeline vivo para gerar o relatório;
+      # o status real é aplicado no último passo.
+      - name: Rodar testes Cypress (headless)
+        id: cypress
+        uses: cypress-io/github-action@v7
+        continue-on-error: true
+        with:
+          command: npm run cy:run:ci
+        env:
+          LOGIN_EMAIL: ${{ secrets.LOGIN_EMAIL }}
+          LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
+          TRELLO_ACTION_ID: ${{ secrets.TRELLO_ACTION_ID }}
+
+      - name: Setup Java (Allure CLI)
+        if: always()
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Traz o relatório publicado anteriormente para reaproveitar o histórico
+      # (gráfico de Tendência). Na primeira execução a branch ainda não existe.
+      - name: Checkout do relatório anterior (gh-pages)
+        if: always()
+        continue-on-error: true
+        uses: actions/checkout@v7
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Restaurar histórico do Allure
+        if: always()
+        run: |
+          mkdir -p allure-results
+          if [ -d gh-pages/history ]; then
+            cp -r gh-pages/history allure-results/history
+            echo "Histórico anterior restaurado."
+          else
+            echo "Nenhum histórico anterior encontrado (primeira execução)."
+          fi
+
+      - name: Gerar executor.json
+        if: always()
+        run: npm run allure:executor
+
+      - name: Gerar relatório Allure
+        if: always()
+        run: npm run allure:generate
+
+      - name: Upload allure-results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-results-${{ github.run_number }}
+          path: allure-results
+          retention-days: 14
+
+      - name: Upload relatório Allure (HTML)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-report-${{ github.run_number }}
+          path: allure-report
+          retention-days: 14
+
+      - name: Upload screenshots e vídeos de falha
+        if: always() && steps.cypress.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: cypress-falhas-${{ github.run_number }}
+          path: |
+            cypress/screenshots
+            cypress/videos
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Publicar no GitHub Pages
+        if: always() && env.PUBLISH_REPORT == 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-report
+          commit_message: 'Relatório Allure - run #${{ github.run_number }}'
+
+      - name: Link do relatório
+        if: always() && env.PUBLISH_REPORT == 'true'
+        run: |
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          echo "### Relatório Allure" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://${OWNER}.github.io/${REPO}/" >> "$GITHUB_STEP_SUMMARY"
+
+      # Relatório já foi gerado/publicado; agora o job reflete a falha dos testes.
+      - name: Falhar o job se os testes falharam
+        if: always() && steps.cypress.outcome == 'failure'
+        run: |
+          echo "::error::Há testes com falha. Veja o relatório Allure e os artifacts."
+          exit 1

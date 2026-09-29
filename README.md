@@ -52,7 +52,7 @@ A abordagem do projeto seguiu a seguinte ordem:
 
 ## Pré-requisitos
 
-- Node.js 18 ou superior
+- Node.js 20.1 ou superior (recomendado: 24, definido no `.nvmrc`; exigência do Cypress 15)
 - npm 9 ou superior
 - Java 8 ou superior (necessário para o Allure Report gerar e abrir o relatório)
 
@@ -76,15 +76,7 @@ cd inmetrics
 npm install
 ```
 
-4. Configure as variáveis de ambiente. O projeto já disponibiliza um `.env.example` com os valores preenchidos para facilitar a avaliação. Escolha uma das opções:
-
-**Opção 1 - Renomear o arquivo**
-
-Renomeie o `.env.example` para `.env` (remova o `.example` do nome).
-
-**Opção 2 - Criar o arquivo e copiar o conteúdo**
-
-Crie um arquivo `.env` na raiz do projeto e copie o conteúdo do `.env.example` para dentro dele.
+4. Configure as variáveis de ambiente. Copie o `.env.example` para `.env` e preencha os valores (o `.env` é ignorado pelo Git e nunca deve ser versionado):
 
 ```bash
 # Windows
@@ -93,6 +85,12 @@ copy .env.example .env
 # Linux/Mac
 cp .env.example .env
 ```
+
+| Variável | Uso |
+|---|---|
+| `LOGIN_EMAIL` | E-mail de uma conta existente no automationexercise.com |
+| `LOGIN_PASSWORD` | Senha dessa conta |
+| `TRELLO_ACTION_ID` | ID de uma action pública do Trello |
 
 ## Cenários cobertos
 
@@ -291,6 +289,25 @@ npm run allure:open
 ```
 
 O `npm run cy:run:allure` já faz essa limpeza automaticamente antes de rodar, então esse cuidado é necessário apenas quando os comandos são executados separadamente.
+
+O relatório inclui a aba **Environment** (URL base, versões de Cypress/Node, sistema operacional e, no CI, branch e commit) e a aba **Categories**, que agrupa as falhas em: falha de rede/serviço externo, timeout/elemento não encontrado, falha de asserção e erro no código de teste.
+
+## Integração contínua (GitHub Actions)
+
+O workflow [`.github/workflows/cypress-allure.yml`](.github/workflows/cypress-allure.yml) roda todos os testes em modo headless (Chrome) a cada `push` e `pull_request` na `main`, e também pode ser disparado manualmente em **Actions → Cypress + Allure → Run workflow**.
+
+- As credenciais vêm dos **Secrets** do repositório: `LOGIN_EMAIL`, `LOGIN_PASSWORD` e `TRELLO_ACTION_ID`.
+- O relatório Allure é gerado mesmo quando há falhas, e o job continua marcado como falho nesse caso.
+- Em execuções na `main`, o relatório é publicado no GitHub Pages (branch `gh-pages`), preservando o histórico do gráfico de **Tendência**: https://ldelgado02.github.io/inmetrics/
+- Em pull requests, o relatório não é publicado; fica disponível como artifact do run.
+- Artifacts de cada run: `allure-results`, relatório HTML e, quando há falha, screenshots e vídeos do Cypress (a gravação de vídeo é ativada só no CI).
+
+Scripts usados pelo CI:
+
+| Script | Descrição |
+|---|---|
+| `npm run cy:run:ci` | Roda todos os testes no Chrome em modo headless |
+| `npm run allure:executor` | Gera o `executor.json` com dados do run (não faz nada fora do GitHub Actions) |
 
 ## Massa de dados: geração, consumo e limpeza
 
