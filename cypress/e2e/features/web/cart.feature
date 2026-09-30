@@ -38,3 +38,7 @@ Feature: Validar carrinho de compras
         And adiciono um segundo produto diferente no carrinho
         And clico no botão "View Cart"
         Then os dois produtos devem ser exibidos no carrinho
+
+        @web @cart
+    Scenario: **Teste Falho de propósito**
+        And clico no "Continue Shopping"
