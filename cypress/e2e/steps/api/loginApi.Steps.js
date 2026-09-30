@@ -1,12 +1,12 @@
 /// <reference types="cypress" />
 import { When, Then, And } from "cypress-cucumber-preprocessor/steps";
 import loginService from "../../../support/services/LoginService";
+import { parseJsonBody } from "../../../support/services/parseJsonBody";
 
 let resposta;
 
 function normalizarResposta(res) {
-    const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
-    resposta = { ...res, body }
+    resposta = { ...res, body: parseJsonBody(res) }
 }
 
 When('eu envio um POST para verifyLogin com credenciais válidas', () => {

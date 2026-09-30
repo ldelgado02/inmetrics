@@ -21,7 +21,7 @@ const allureCategories = [
   {
     name: "Falha de rede / serviço externo",
     matchedStatuses: ["failed", "broken"],
-    messageRegex: "(?s).*(cy\\.request\\(\\) failed|cy\\.visit\\(\\) failed|ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENOTFOUND|socket hang up).*",
+    messageRegex: "(?s).*(cy\\.request\\(\\) failed|cy\\.visit\\(\\) failed|ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENOTFOUND|socket hang up|Resposta da API não é JSON).*",
   },
   {
     name: "Timeout / elemento não encontrado",

@@ -3,6 +3,7 @@ import { When, Then } from "cypress-cucumber-preprocessor/steps";
 import accountService from "../../../support/services/AccountService";
 import dataProvider from "../../../support/data/DataProvider";
 import dataCleaner from "../../../support/data/DataCleaner";
+import { parseJsonBody } from "../../../support/services/parseJsonBody";
 
 let resposta;
 
@@ -15,8 +16,7 @@ When('eu envio um POST para createAccount com um novo usuário', () => {
             // cadastro via UI, que exclui explicitamente na feature).
             dataCleaner.register('apiAccount', { email: usuario.email, password: usuario.password })
 
-            const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
-            resposta = { ...res, body }
+            resposta = { ...res, body: parseJsonBody(res) }
         })
     })
 })
