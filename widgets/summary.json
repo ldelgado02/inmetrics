@@ -1,1 +1,1 @@
-{"reportName":"Relatório de testes - Inmetrics","testRuns":[],"statistic":{"failed":0,"broken":1,"skipped":0,"passed":30,"unknown":0,"total":31},"time":{"start":1790768222444,"stop":1790768299153,"duration":76709,"minDuration":100,"maxDuration":5991,"sumDuration":37200}}
+{"reportName":"Relatório de testes - Inmetrics","testRuns":[],"statistic":{"failed":0,"broken":0,"skipped":0,"passed":30,"unknown":0,"total":30},"time":{"start":1790769831867,"stop":1790769912511,"duration":80644,"minDuration":65,"maxDuration":6505,"sumDuration":38825}}
