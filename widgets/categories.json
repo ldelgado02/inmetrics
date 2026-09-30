@@ -1,1 +1,1 @@
-{"total":2,"items":[{"uid":"8bb726a71f6ad6c0df2a8c27703b0165","name":"Timeout / elemento não encontrado","statistic":{"failed":13,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":13}},{"uid":"9a8dae5af8bf8104f7241538699158dc","name":"Erro no código de teste","statistic":{"failed":0,"broken":5,"skipped":0,"passed":0,"unknown":0,"total":5}}]}
+{"total":1,"items":[{"uid":"9a8dae5af8bf8104f7241538699158dc","name":"Erro no código de teste","statistic":{"failed":0,"broken":1,"skipped":0,"passed":0,"unknown":0,"total":1}}]}
